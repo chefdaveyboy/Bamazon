@@ -15,6 +15,26 @@ function exit() {
     connection.end();
 }
 
+function restart() {
+    inquirer
+        .prompt([
+            {
+            name: "confirm",
+            type: "confirm",
+            message: "Would you like to continue shopping?",
+            default: true
+            }
+        ])
+        .then(function(response) {
+            if (response.confirm) {
+                bamazonInquirer();
+            }
+            else {
+                exit();
+            }
+        });
+}
+
 connection.connect(function(err) {
     if (err) throw err;
     afterConnection();
@@ -31,6 +51,7 @@ function afterConnection() {
             console.log("Price: " + "$" + res.price);
             console.log("----------");
         });
+
         bamazonInquirer();
     });
 }
@@ -38,44 +59,66 @@ function afterConnection() {
 function bamazonInquirer() {
     
     inquirer
-        .prompt(
+        .prompt([
             {
                 name: "productId",
                 type: "number",
                 message: "What is the Item ID of the product you'd like to purchase?",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
             },
             {
                 name: "productQuantity",
                 type: "number",
-                message: "How many would you like to purchase?"
-            })
-            .then(function(response) {
-                var product;
-                for (var i = 0; i < response.length; i++) {
-                    if (res[i].item_id === response.productId) {
-                        product = res[i];
+                message: "How many would you like to purchase?",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
                     }
+                    return false;
                 }
-                
-                if (product.stock_quantity >= response.productQuantity) {
-                    connection.query("UPDATE products SET ? WHERE ?", 
-                    [
-                        {
-                            stock_quantity: product.stock_quantity - response.productQuantity
-                        },
-                        {
-                            item_id: product.item_id
+            }
+        ])
+            .then(function(response) {
+                connection.query("SELECT * FROM products", function(err, res){  
+                    var product;
+                    for (var i = 0; i < res.length; i++) {
+                        if (res[i].item_id === response.productId) {
+                            product = res[i];
                         }
-                    ],
+                    }
+                    if (product.stock_quantity >= response.productQuantity) {
+                        connection.query("UPDATE products SET ? WHERE ?", 
+                        [
+                            {
+                                stock_quantity: product.stock_quantity - response.productQuantity
+                            },
+                            {
+                                item_id: product.item_id
+                            }
+                        ],
                         function (err) {
                             if (err) throw err;
                             console.log("----------");
                             console.log("Your order of " + response.productQuantity + " " + product.product_name + "(s) was placed successfully! Thank you!");
                             console.log("Your total is: $" + response.productQuantity * product.price);
                             console.log("----------");
-                        }
-                    )
-                }
+                            restart();
+                            }
+                            
+                        );
+                    }
+                    else {
+                        console.log("I'm sorry, the product you're looking for doesn't exist or is currently out of stock.");
+                        restart();
+                    }
+                })
+                
             })
             
 }
+
