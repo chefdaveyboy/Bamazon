@@ -49,7 +49,7 @@ function bamazonManager() {
                 
             }
             else if (userChoice === "Add Product") {
-                // addProduct();
+                addProduct();
                 console.log("Add Product");
                 
             }
@@ -135,4 +135,58 @@ function addInventory() {
         }); 
     });
     
+}
+
+function addProduct() {
+    inquirer
+        .prompt([
+            {
+                name: "productName",
+                type: "input",
+                message: "What is the name of the product you're trying to add?"
+            },
+            {
+                name: "department",
+                type: "list",
+                message: "What department does your product best fit into?",
+                choices: ["Electronics", "Toys & Games", "Kitchen", "Home & Garden", "Clothing", "Automotive", "Other"]
+            },
+            {
+                name: "price",
+                type: "number",
+                message: "Please enter the price of the product.",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
+            },
+            {
+                name: "quantity",
+                type: "number",
+                message: "How many are you adding to the stock?",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        ])
+        .then(function(response) {
+            connection.query("INSERT INTO products SET ?",
+            {
+                product_name: response.productName,
+                department_name: response.department,
+                price: response.price,
+                stock_quantity: response.quantity
+            },
+            function(err, res) {
+                if (err) throw err;
+                console.log("--PRODUCT SUCCESSFULLY ADDED--")
+                bamazonManager();
+            }
+            )
+        })
 }
