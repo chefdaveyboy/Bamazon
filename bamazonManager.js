@@ -35,26 +35,24 @@ function bamazonManager() {
             var userChoice = response.options;
             if (userChoice === "View Products") {
                 viewProducts();
-                console.log("View Products");
                 
             }
             else if (userChoice === "View Low Inventory") {
                 lowInventory();
-                console.log("View Low Inventory");
+                
                 
             }
             else if (userChoice === "Add Inventory") {
                 addInventory();
-                console.log("Add Inventory");
+                
                 
             }
             else if (userChoice === "Add Product") {
                 addProduct();
-                console.log("Add Product");
+                
                 
             }
             else if (userChoice === "Log Out") {
-                console.log("Log Out");
                 exit();
                 
             }
@@ -184,7 +182,11 @@ function addProduct() {
             },
             function(err, res) {
                 if (err) throw err;
-                console.log("--PRODUCT SUCCESSFULLY ADDED--")
+                console.log("--PRODUCT SUCCESSFULLY ADDED--");
+                console.log("Product: " + response.productName);
+                console.log("Department: " + response.department);
+                console.log("Price: " + "$" + response.price);
+                console.log("Quantity: " + response.quantity);
                 bamazonManager();
             }
             )
