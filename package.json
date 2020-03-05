@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/chefdaveyboy/Bamazon#readme",
   "dependencies": {
+    "custom-env": "^2.0.1",
+    "dotenv": "^8.2.0",
     "inquirer": "^7.0.5",
     "mysql": "^2.18.1"
   }

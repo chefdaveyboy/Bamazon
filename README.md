@@ -40,6 +40,8 @@ You will also need these node packages installed:
 
 2. inquirer: version: "7.0.5" 
 
+3. (ONLY IF YOU WANT TO USE A .ENV TO HIDE YOUR PASSWORD!)dotenv: version: "8.2.0"
+
 ---------
 
 bamazonCustomer.js:
